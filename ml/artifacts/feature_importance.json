@@ -1,0 +1,93 @@
+[
+  {
+    "feature": "ca",
+    "importance": 0.06251082251082257,
+    "std": 0.021982818677561595,
+    "relative_weight": 35.2,
+    "label": "Major Vessels Colored"
+  },
+  {
+    "feature": "cp",
+    "importance": 0.042424242424242496,
+    "std": 0.01393038347160527,
+    "relative_weight": 23.9,
+    "label": "Chest Pain Type"
+  },
+  {
+    "feature": "oldpeak",
+    "importance": 0.016233766233766267,
+    "std": 0.004498833266412657,
+    "relative_weight": 9.1,
+    "label": "ST Depression (Oldpeak)"
+  },
+  {
+    "feature": "slope",
+    "importance": 0.010432900432900447,
+    "std": 0.007447145771052482,
+    "relative_weight": 5.9,
+    "label": "Peak ST Slope"
+  },
+  {
+    "feature": "thal",
+    "importance": 0.010043290043290085,
+    "std": 0.00942252319335951,
+    "relative_weight": 5.7,
+    "label": "Thalassemia Scan"
+  },
+  {
+    "feature": "exang",
+    "importance": 0.00779220779220783,
+    "std": 0.00478154156588192,
+    "relative_weight": 4.4,
+    "label": "Exercise-Induced Angina"
+  },
+  {
+    "feature": "sex",
+    "importance": 0.007792207792207808,
+    "std": 0.007040457128697214,
+    "relative_weight": 4.4,
+    "label": "Biological Sex"
+  },
+  {
+    "feature": "trestbps",
+    "importance": 0.00696969696969699,
+    "std": 0.006920181184706618,
+    "relative_weight": 3.9,
+    "label": "Resting Blood Pressure"
+  },
+  {
+    "feature": "thalach",
+    "importance": 0.0050649350649351185,
+    "std": 0.006605952805597476,
+    "relative_weight": 2.9,
+    "label": "Max Heart Rate Achieved"
+  },
+  {
+    "feature": "age",
+    "importance": 0.003116883116883078,
+    "std": 0.0016575056033832623,
+    "relative_weight": 1.8,
+    "label": "Patient Age"
+  },
+  {
+    "feature": "fbs",
+    "importance": 0.0024242424242424086,
+    "std": 0.0014120784788138518,
+    "relative_weight": 1.4,
+    "label": "Fasting Blood Sugar"
+  },
+  {
+    "feature": "restecg",
+    "importance": 0.0016450216450216582,
+    "std": 0.003138453499634954,
+    "relative_weight": 0.9,
+    "label": "Resting ECG"
+  },
+  {
+    "feature": "chol",
+    "importance": 0.0011688311688311836,
+    "std": 0.0031652097680399623,
+    "relative_weight": 0.7,
+    "label": "Serum Cholesterol"
+  }
+]

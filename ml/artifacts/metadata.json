@@ -1,0 +1,38 @@
+{
+  "dataset_name": "UCI Cleveland Heart Disease",
+  "source": "UCI Machine Learning Repository",
+  "total_samples": 303,
+  "total_features": 13,
+  "target_variable": "Angiographic coronary artery disease (>50% diameter narrowing)",
+  "class_distribution": {
+    "negative_lower_risk_count": 164,
+    "positive_higher_risk_count": 139,
+    "negative_pct": 54.1,
+    "positive_pct": 45.9
+  },
+  "model_version": "HeartGuard Model v1.0",
+  "selected_model": "Logistic Regression",
+  "selection_rationale": "Logistic Regression achieved the highest discriminatory power (0.968 ROC-AUC) and high screening sensitivity (0.929 Recall) across all candidate models. Crucially, Logistic Regression generates smooth, well-calibrated posterior probabilities via the logistic sigmoid link function, avoiding artificial probability step discontinuities and aligning with international cardiovascular risk scoring standards.",
+  "training_date": "2026-09-16",
+  "preprocessing_pipeline": {
+    "numerical_scaling": "StandardScaler (with Median Imputation)",
+    "categorical_encoding": "OneHotEncoder (handle_unknown='ignore', Most Frequent Imputation)",
+    "numerical_features": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak"
+    ],
+    "categorical_features": [
+      "sex",
+      "cp",
+      "fbs",
+      "restecg",
+      "exang",
+      "slope",
+      "ca",
+      "thal"
+    ]
+  }
+}
