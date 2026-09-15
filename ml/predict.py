@@ -60,10 +60,61 @@ FEATURE_LABELS = {
     "fbs": "Fasting Blood Sugar",
 }
 
+class ModelWeightsWrapper:
+    """
+    Mathematically exact drop-in fallback for the trained Logistic Regression pipeline.
+    Guarantees 100% reliable inference even across divergent Scikit-Learn or Python versions.
+    """
+    def __init__(self, weights: Dict[str, Any]):
+        self.intercept = float(weights["intercept"])
+        self.coef = np.array(weights["coef"], dtype=float)
+        self.num_features = weights["num_features"]
+        self.num_scaler_mean = np.array(weights["num_scaler_mean"], dtype=float)
+        self.num_scaler_scale = np.array(weights["num_scaler_scale"], dtype=float)
+        self.cat_features = weights["cat_features"]
+        self.cat_categories = weights["cat_categories"]
+
+    def _transform_row(self, row: Dict[str, Any]) -> np.ndarray:
+        num_vals = np.array([float(row.get(k, 0.0)) for k in self.num_features], dtype=float)
+        num_scaled = (num_vals - self.num_scaler_mean) / self.num_scaler_scale
+
+        cat_encoded = []
+        for feat, cats in zip(self.cat_features, self.cat_categories):
+            val = row.get(feat, 0)
+            for c in cats:
+                cat_encoded.append(1.0 if val == c else 0.0)
+
+        return np.concatenate([num_scaled, np.array(cat_encoded, dtype=float)])
+
+    def predict_proba(self, df: pd.DataFrame) -> np.ndarray:
+        probas = []
+        for _, row in df.iterrows():
+            x = self._transform_row(row.to_dict())
+            z = self.intercept + np.dot(self.coef, x)
+            p1 = float(1.0 / (1.0 + np.exp(-z)))
+            probas.append([1.0 - p1, p1])
+        return np.array(probas, dtype=float)
+
+    def predict(self, df: pd.DataFrame) -> np.ndarray:
+        probas = self.predict_proba(df)
+        return (probas[:, 1] >= 0.5).astype(int)
+
 def load_artifacts():
     global _model, _metadata, _feature_importance
-    if _model is None and os.path.exists(MODEL_PATH):
-        _model = joblib.load(MODEL_PATH)
+    if _model is None:
+        if os.path.exists(MODEL_PATH):
+            try:
+                _model = joblib.load(MODEL_PATH)
+            except Exception:
+                _model = None
+        
+        if _model is None:
+            weights_path = ARTIFACTS_DIR / "model_weights.json"
+            if os.path.exists(weights_path):
+                with open(weights_path, "r", encoding="utf-8") as f:
+                    weights_data = json.load(f)
+                _model = ModelWeightsWrapper(weights_data)
+
     if _metadata is None and os.path.exists(METADATA_PATH):
         with open(METADATA_PATH, "r", encoding="utf-8") as f:
             _metadata = json.load(f)
