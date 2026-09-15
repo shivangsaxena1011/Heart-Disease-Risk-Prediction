@@ -53,6 +53,22 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     return response
 
+@app.get("/", tags=["Root"])
+async def root():
+    return {
+        "service": "HeartGuard AI Inference API",
+        "status": "online",
+        "model_loaded": True,
+        "model_version": "HeartGuard Model v1.0",
+        "endpoints": {
+            "health": "/health",
+            "documentation": "/docs",
+            "predict": "/predict",
+            "model_info": "/model-info"
+        },
+        "description": "FastAPI cardiovascular risk screening service. Connect your Vercel frontend via NEXT_PUBLIC_API_URL."
+    }
+
 @app.get("/health", tags=["Health"])
 async def health_check():
     try:
