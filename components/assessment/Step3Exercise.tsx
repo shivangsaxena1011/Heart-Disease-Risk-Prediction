@@ -142,8 +142,8 @@ export function Step3Exercise({ data, onChange, errors }: Step3Props) {
                 step="0.1"
                 min={0}
                 max={8}
-                value={data.oldpeak !== undefined ? data.oldpeak : ""}
-                onChange={(e) => onChange("oldpeak", parseFloat(e.target.value) || 0)}
+                value={data.oldpeak !== undefined && !isNaN(data.oldpeak) ? data.oldpeak : ""}
+                onChange={(e) => onChange("oldpeak", e.target.value === "" ? (NaN as unknown as number) : parseFloat(e.target.value))}
                 placeholder="e.g. 1.2"
                 className={`w-full px-4 py-2.5 rounded-lg border bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
                   errors.oldpeak ? "border-rose-500 bg-rose-50/20" : "border-slate-300"

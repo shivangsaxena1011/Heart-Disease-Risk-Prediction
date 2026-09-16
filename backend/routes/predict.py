@@ -32,8 +32,14 @@ async def predict_risk(payload: HeartAssessmentInput):
             **result
         }
         return response_payload
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(ve)
+        )
     except Exception as e:
-        # Prevent leaking filesystem or python tracebacks
+        import logging
+        logging.error(f"Inference error encountered: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while computing the risk screening prediction. Please try again."

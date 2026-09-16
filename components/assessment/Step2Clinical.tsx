@@ -36,8 +36,8 @@ export function Step2Clinical({ data, onChange, errors }: Step2Props) {
               type="number"
               min={70}
               max={260}
-              value={data.trestbps || ""}
-              onChange={(e) => onChange("trestbps", parseFloat(e.target.value) || 0)}
+              value={data.trestbps && !isNaN(data.trestbps) ? data.trestbps : ""}
+              onChange={(e) => onChange("trestbps", e.target.value === "" ? (NaN as unknown as number) : parseInt(e.target.value, 10))}
               placeholder="e.g. 130"
               className={`w-full px-4 py-2.5 rounded-lg border bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
                 errors.trestbps ? "border-rose-500 bg-rose-50/20" : "border-slate-300"
@@ -69,8 +69,8 @@ export function Step2Clinical({ data, onChange, errors }: Step2Props) {
               type="number"
               min={80}
               max={650}
-              value={data.chol || ""}
-              onChange={(e) => onChange("chol", parseFloat(e.target.value) || 0)}
+              value={data.chol && !isNaN(data.chol) ? data.chol : ""}
+              onChange={(e) => onChange("chol", e.target.value === "" ? (NaN as unknown as number) : parseInt(e.target.value, 10))}
               placeholder="e.g. 240"
               className={`w-full px-4 py-2.5 rounded-lg border bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
                 errors.chol ? "border-rose-500 bg-rose-50/20" : "border-slate-300"
@@ -102,8 +102,8 @@ export function Step2Clinical({ data, onChange, errors }: Step2Props) {
               type="number"
               min={60}
               max={240}
-              value={data.thalach || ""}
-              onChange={(e) => onChange("thalach", parseFloat(e.target.value) || 0)}
+              value={data.thalach && !isNaN(data.thalach) ? data.thalach : ""}
+              onChange={(e) => onChange("thalach", e.target.value === "" ? (NaN as unknown as number) : parseInt(e.target.value, 10))}
               placeholder="e.g. 150"
               className={`w-full px-4 py-2.5 rounded-lg border bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
                 errors.thalach ? "border-rose-500 bg-rose-50/20" : "border-slate-300"

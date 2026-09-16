@@ -9,6 +9,8 @@ interface FactorChartProps {
 }
 
 export function FactorChart({ factors }: FactorChartProps) {
+  const safeFactors = Array.isArray(factors) ? factors : [];
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
@@ -24,7 +26,12 @@ export function FactorChart({ factors }: FactorChartProps) {
       </div>
 
       <div className="space-y-4">
-        {factors.map((item, idx) => {
+        {safeFactors.length === 0 ? (
+          <div className="text-xs text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            Factor attributions are computed across all 13 clinical features based on trained model coefficients.
+          </div>
+        ) : (
+          safeFactors.map((item, idx) => {
           const isElevating = item.direction === "elevating";
           const isLowering = item.direction === "lowering";
 
@@ -76,7 +83,7 @@ export function FactorChart({ factors }: FactorChartProps) {
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
 
       <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5 text-xs text-slate-600">

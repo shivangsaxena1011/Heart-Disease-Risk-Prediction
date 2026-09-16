@@ -10,6 +10,8 @@ interface RecommendationsCardProps {
 }
 
 export function RecommendationsCard({ recommendations, classification }: RecommendationsCardProps) {
+  const safeRecs = Array.isArray(recommendations) ? recommendations : [];
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
       <div className="border-b border-slate-200 pb-4 flex items-center justify-between">
@@ -25,20 +27,26 @@ export function RecommendationsCard({ recommendations, classification }: Recomme
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {recommendations.map((rec, idx) => (
-          <div
-            key={idx}
-            className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2 hover:bg-slate-50 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
-                {rec.category}
-              </span>
-            </div>
-            <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
-            <p className="text-xs text-slate-600 leading-relaxed">{rec.detail}</p>
+        {safeRecs.length === 0 ? (
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 col-span-2 text-xs text-slate-600">
+            Discuss these clinical findings with your physician for comprehensive cardiovascular evaluation.
           </div>
-        ))}
+        ) : (
+          safeRecs.map((rec, idx) => (
+            <div
+              key={idx}
+              className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2 hover:bg-slate-50 transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                  {rec.category}
+                </span>
+              </div>
+              <h4 className="font-semibold text-slate-900 text-sm">{rec.title}</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">{rec.detail}</p>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Safety Notice */}

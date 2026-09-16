@@ -19,18 +19,24 @@ import {
   FileText,
   AlertOctagon,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
 
 export default function ResultsPage() {
   const router = useRouter();
   const [result, setResult] = useState<PredictionResult | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   useEffect(() => {
-    const activeResult = getCurrentResult();
-    if (activeResult) {
-      setResult(activeResult);
+    try {
+      const activeResult = getCurrentResult();
+      if (activeResult) {
+        setResult(activeResult);
+      }
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -52,6 +58,16 @@ export default function ResultsPage() {
       setIsGeneratingPdf(false);
     }
   };
+
+  // Loading state while checking localStorage on client mount
+  if (isLoading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-24 flex flex-col items-center justify-center space-y-3">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <p className="text-sm font-medium text-slate-500">Retrieving screening assessment...</p>
+      </div>
+    );
+  }
 
   // Empty State if accessed without an assessment
   if (!result) {
@@ -79,7 +95,7 @@ export default function ResultsPage() {
     );
   }
 
-  const p = result.input_summary;
+  const p = result.input_summary || ({} as any);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
@@ -153,52 +169,52 @@ export default function ResultsPage() {
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Age / Sex</span>
             <div className="font-semibold text-slate-900 mt-0.5">
-              {p.age} yrs • {p.sex === 1 ? "Male" : "Female"}
+              {p.age ?? "–"} yrs • {p.sex === 1 ? "Male" : p.sex === 0 ? "Female" : "–"}
             </div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Resting Blood Pressure</span>
-            <div className="font-semibold text-slate-900 mt-0.5">{p.trestbps} mm Hg</div>
+            <div className="font-semibold text-slate-900 mt-0.5">{p.trestbps ?? "–"} mm Hg</div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Serum Cholesterol</span>
-            <div className="font-semibold text-slate-900 mt-0.5">{p.chol} mg/dL</div>
+            <div className="font-semibold text-slate-900 mt-0.5">{p.chol ?? "–"} mg/dL</div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Max Heart Rate</span>
-            <div className="font-semibold text-slate-900 mt-0.5">{p.thalach} bpm</div>
+            <div className="font-semibold text-slate-900 mt-0.5">{p.thalach ?? "–"} bpm</div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Chest Pain Type</span>
             <div className="font-semibold text-slate-900 mt-0.5">
-              {p.cp === 1 ? "Typical Angina (1)" : p.cp === 2 ? "Atypical Angina (2)" : p.cp === 3 ? "Non-Anginal (3)" : "Asymptomatic (4)"}
+              {p.cp === 1 ? "Typical Angina (1)" : p.cp === 2 ? "Atypical Angina (2)" : p.cp === 3 ? "Non-Anginal (3)" : p.cp === 4 ? "Asymptomatic (4)" : "–"}
             </div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Exercise Angina</span>
             <div className="font-semibold text-slate-900 mt-0.5">
-              {p.exang === 1 ? "Yes (Induced)" : "No"}
+              {p.exang === 1 ? "Yes (Induced)" : p.exang === 0 ? "No" : "–"}
             </div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">ST Depression</span>
-            <div className="font-semibold text-slate-900 mt-0.5">{p.oldpeak} mm</div>
+            <div className="font-semibold text-slate-900 mt-0.5">{p.oldpeak !== undefined ? `${p.oldpeak} mm` : "–"}</div>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <span className="text-slate-400">Major Vessels / Thal</span>
             <div className="font-semibold text-slate-900 mt-0.5">
-              {p.ca} vessel(s) • Thal: {p.thal}
+              {p.ca !== undefined ? `${p.ca} vessel(s)` : "–"} • Thal: {p.thal ?? "–"}
             </div>
           </div>
         </div>
       </div>
 
       {/* Model Explainability: Factor Contributions */}
-      <FactorChart factors={result.top_contributing_factors} />
+      <FactorChart factors={Array.isArray(result.top_contributing_factors) ? result.top_contributing_factors : []} />
 
       {/* Educational Guidance */}
       <RecommendationsCard
-        recommendations={result.recommendations}
+        recommendations={Array.isArray(result.recommendations) ? result.recommendations : []}
         classification={result.risk_classification}
       />
 

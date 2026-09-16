@@ -37,8 +37,8 @@ export function Step1Basic({ data, onChange, errors }: Step1Props) {
               type="number"
               min={18}
               max={120}
-              value={data.age || ""}
-              onChange={(e) => onChange("age", parseInt(e.target.value) || 0)}
+              value={data.age && !isNaN(data.age) ? data.age : ""}
+              onChange={(e) => onChange("age", e.target.value === "" ? (NaN as unknown as number) : parseInt(e.target.value, 10))}
               placeholder="e.g. 54"
               className={`w-full px-4 py-2.5 rounded-lg border bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
                 errors.age ? "border-rose-500 bg-rose-50/20" : "border-slate-300"

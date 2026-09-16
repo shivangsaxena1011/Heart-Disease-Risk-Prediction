@@ -11,10 +11,19 @@ interface RiskGaugeProps {
 }
 
 export function RiskGauge({ percentage, probability, classification }: RiskGaugeProps) {
+  const safePercentage = typeof percentage === "number" && !isNaN(percentage) ? percentage : 0;
+  const safeProbability = typeof probability === "number" && !isNaN(probability) ? probability : 0;
+  const safeClassification: RiskClassification = classification || {
+    level: "Lower",
+    title: "Lower Risk",
+    badge_color: "emerald",
+    summary: "Model-estimated parameters indicate lower statistical risk.",
+  };
+
   // Theme color mapping
-  const isHigh = classification.level === "Higher";
-  const isIntermediate = classification.level === "Intermediate";
-  const isLow = classification.level === "Lower";
+  const isHigh = safeClassification.level === "Higher";
+  const isIntermediate = safeClassification.level === "Intermediate";
+  const isLow = safeClassification.level === "Lower";
 
   const ringColor = isHigh
     ? "text-rose-600"
@@ -33,7 +42,7 @@ export function RiskGauge({ percentage, probability, classification }: RiskGauge
   const stroke = 12;
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  const strokeDashoffset = circumference - (safePercentage / 100) * circumference;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8">
@@ -64,7 +73,7 @@ export function RiskGauge({ percentage, probability, classification }: RiskGauge
 
         <div className="absolute flex flex-col items-center justify-center text-center px-1">
           <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            {percentage}%
+            {safePercentage}%
           </span>
           <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider leading-tight">
             Model-Estimated<br />Probability
@@ -79,17 +88,17 @@ export function RiskGauge({ percentage, probability, classification }: RiskGauge
             {isHigh && <ShieldAlert className="w-3.5 h-3.5" />}
             {isIntermediate && <AlertTriangle className="w-3.5 h-3.5" />}
             {isLow && <CheckCircle className="w-3.5 h-3.5" />}
-            <span>{classification.title}</span>
+            <span>{safeClassification.title}</span>
           </span>
-          <span className="text-xs text-slate-400 font-mono">P = {probability.toFixed(3)}</span>
+          <span className="text-xs text-slate-400 font-mono">P = {safeProbability.toFixed(3)}</span>
         </div>
 
         <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
-          Estimated Risk: <span className={ringColor}>{classification.level}</span>
+          Estimated Risk: <span className={ringColor}>{safeClassification.level}</span>
         </h3>
 
         <p className="text-sm text-slate-600 leading-relaxed max-w-xl">
-          {classification.summary}
+          {safeClassification.summary}
         </p>
 
         <div className="pt-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200">

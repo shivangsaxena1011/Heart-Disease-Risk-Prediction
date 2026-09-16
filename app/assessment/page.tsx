@@ -80,24 +80,24 @@ export default function AssessmentPage() {
     const errs: Record<string, string> = {};
 
     if (step === 1) {
-      if (!formData.age || formData.age < 18 || formData.age > 120) {
+      if (!formData.age || isNaN(formData.age) || formData.age < 18 || formData.age > 120) {
         errs.age = "Please enter an adult age between 18 and 120.";
       }
       if (![0, 1].includes(formData.sex)) {
         errs.sex = "Please select biological sex.";
       }
     } else if (step === 2) {
-      if (!formData.trestbps || formData.trestbps < 70 || formData.trestbps > 260) {
+      if (!formData.trestbps || isNaN(formData.trestbps) || formData.trestbps < 70 || formData.trestbps > 260) {
         errs.trestbps = "Blood pressure must be between 70 and 260 mm Hg.";
       }
-      if (!formData.chol || formData.chol < 80 || formData.chol > 650) {
+      if (!formData.chol || isNaN(formData.chol) || formData.chol < 80 || formData.chol > 650) {
         errs.chol = "Serum cholesterol must be between 80 and 650 mg/dL.";
       }
-      if (!formData.thalach || formData.thalach < 60 || formData.thalach > 240) {
+      if (!formData.thalach || isNaN(formData.thalach) || formData.thalach < 60 || formData.thalach > 240) {
         errs.thalach = "Maximum heart rate must be between 60 and 240 bpm.";
       }
     } else if (step === 3) {
-      if (formData.oldpeak === undefined || formData.oldpeak < 0 || formData.oldpeak > 8) {
+      if (formData.oldpeak === undefined || formData.oldpeak === null || isNaN(formData.oldpeak) || formData.oldpeak < 0 || formData.oldpeak > 8) {
         errs.oldpeak = "ST depression must be between 0.0 and 8.0 mm.";
       }
     } else if (step === 4) {

@@ -67,8 +67,15 @@ export default function ModelInsightsPage() {
     );
   }
 
-  const { metadata, metrics, feature_importance } = data;
-  const activeModel = metrics.models[activeModelKey] || metrics.selected_metrics;
+  const metadata = data.metadata || ({} as any);
+  const metrics = data.metrics || ({} as any);
+  const models = metrics.models || {};
+  const activeModel = models[activeModelKey] || metrics.selected_metrics || {
+    confusion_matrix: { tn: 0, fp: 0, fn: 0, tp: 0 },
+    test_roc_auc: 0,
+    roc_curve: []
+  };
+  const feature_importance = Array.isArray(data.feature_importance) ? data.feature_importance : [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
@@ -166,7 +173,7 @@ export default function ModelInsightsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {Object.entries(metrics.models).map(([name, m]) => {
+              {Object.entries(models).map(([name, m]) => {
                 const isSelected = name === metrics.best_model;
                 const isActive = name === activeModelKey;
 

@@ -7,7 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(isoString: string): string {
   try {
+    if (!isoString) return "N/A";
     const d = new Date(isoString);
+    if (isNaN(d.getTime())) return isoString;
     return d.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -16,6 +18,6 @@ export function formatDate(isoString: string): string {
       minute: "2-digit",
     });
   } catch {
-    return isoString;
+    return isoString || "N/A";
   }
 }

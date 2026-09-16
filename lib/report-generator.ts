@@ -85,24 +85,24 @@ export function generatePdfReport(result: PredictionResult): void {
   doc.setFont("helvetica", "normal");
   doc.setTextColor(51, 65, 85);
 
-  const p = result.input_summary;
+  const p = result.input_summary || ({} as any);
   const col1 = [
-    `Patient Age: ${p.age} years`,
-    `Biological Sex: ${p.sex === 1 ? "Male (1)" : "Female (0)"}`,
-    `Resting Blood Pressure: ${p.trestbps} mm Hg`,
-    `Serum Cholesterol: ${p.chol} mg/dL`,
-    `Fasting Blood Sugar > 120: ${p.fbs === 1 ? "Yes (1)" : "No (0)"}`,
-    `Resting ECG: ${p.restecg === 0 ? "Normal (0)" : p.restecg === 1 ? "ST-T Abnormality (1)" : "LV Hypertrophy (2)"}`,
-    `Max Heart Rate Achieved: ${p.thalach} bpm`,
+    `Patient Age: ${p.age ?? "N/A"} years`,
+    `Biological Sex: ${p.sex === 1 ? "Male (1)" : p.sex === 0 ? "Female (0)" : "N/A"}`,
+    `Resting Blood Pressure: ${p.trestbps ?? "N/A"} mm Hg`,
+    `Serum Cholesterol: ${p.chol ?? "N/A"} mg/dL`,
+    `Fasting Blood Sugar > 120: ${p.fbs === 1 ? "Yes (1)" : p.fbs === 0 ? "No (0)" : "N/A"}`,
+    `Resting ECG: ${p.restecg === 0 ? "Normal (0)" : p.restecg === 1 ? "ST-T Abnormality (1)" : p.restecg === 2 ? "LV Hypertrophy (2)" : "N/A"}`,
+    `Max Heart Rate Achieved: ${p.thalach ?? "N/A"} bpm`,
   ];
 
   const col2 = [
-    `Chest Pain Type: ${p.cp === 1 ? "Typical Angina (1)" : p.cp === 2 ? "Atypical Angina (2)" : p.cp === 3 ? "Non-Anginal (3)" : "Asymptomatic (4)"}`,
-    `Exercise-Induced Angina: ${p.exang === 1 ? "Yes (1)" : "No (0)"}`,
-    `ST Depression (Oldpeak): ${p.oldpeak} mm`,
-    `ST Slope: ${p.slope === 1 ? "Upsloping (1)" : p.slope === 2 ? "Flat (2)" : "Downsloping (3)"}`,
-    `Major Fluoroscopy Vessels: ${p.ca} vessel(s)`,
-    `Thalassemia Scan: ${p.thal === 3 ? "Normal (3)" : p.thal === 6 ? "Fixed Defect (6)" : "Reversible Defect (7)"}`,
+    `Chest Pain Type: ${p.cp === 1 ? "Typical Angina (1)" : p.cp === 2 ? "Atypical Angina (2)" : p.cp === 3 ? "Non-Anginal (3)" : p.cp === 4 ? "Asymptomatic (4)" : "N/A"}`,
+    `Exercise-Induced Angina: ${p.exang === 1 ? "Yes (1)" : p.exang === 0 ? "No (0)" : "N/A"}`,
+    `ST Depression (Oldpeak): ${p.oldpeak !== undefined ? `${p.oldpeak} mm` : "N/A"}`,
+    `ST Slope: ${p.slope === 1 ? "Upsloping (1)" : p.slope === 2 ? "Flat (2)" : p.slope === 3 ? "Downsloping (3)" : "N/A"}`,
+    `Major Fluoroscopy Vessels: ${p.ca !== undefined ? `${p.ca} vessel(s)` : "N/A"}`,
+    `Thalassemia Scan: ${p.thal === 3 ? "Normal (3)" : p.thal === 6 ? "Fixed Defect (6)" : p.thal === 7 ? "Reversible Defect (7)" : "N/A"}`,
   ];
 
   let leftY = y + 2;
@@ -130,11 +130,17 @@ export function generatePdfReport(result: PredictionResult): void {
   doc.setFontSize(8);
   doc.setTextColor(71, 85, 105);
 
-  result.top_contributing_factors.slice(0, 4).forEach((factor) => {
-    const dir = factor.direction === "elevating" ? "[Elevating Factor]" : factor.direction === "lowering" ? "[Protective Shift]" : "[Neutral]";
-    doc.text(`• ${factor.label}: Patient Value ${factor.patient_value}  -  ${dir}`, 16, y);
+  const safeFactors = Array.isArray(result.top_contributing_factors) ? result.top_contributing_factors : [];
+  if (safeFactors.length === 0) {
+    doc.text("• Global model weights applied across evaluated clinical features.", 16, y);
     y += 4.5;
-  });
+  } else {
+    safeFactors.slice(0, 4).forEach((factor) => {
+      const dir = factor.direction === "elevating" ? "[Elevating Factor]" : factor.direction === "lowering" ? "[Protective Shift]" : "[Neutral]";
+      doc.text(`• ${factor.label}: Patient Value ${factor.patient_value}  -  ${dir}`, 16, y);
+      y += 4.5;
+    });
+  }
 
   y += 4;
 
@@ -149,7 +155,8 @@ export function generatePdfReport(result: PredictionResult): void {
   doc.setFontSize(8);
   doc.setTextColor(71, 85, 105);
 
-  result.recommendations.slice(0, 3).forEach((rec) => {
+  const safeRecs = Array.isArray(result.recommendations) ? result.recommendations : [];
+  safeRecs.slice(0, 3).forEach((rec) => {
     doc.setFont("helvetica", "bold");
     doc.text(`• ${rec.title}: `, 16, y);
     const titleWidth = doc.getTextWidth(`• ${rec.title}: `);
